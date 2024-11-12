@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aws-pod
+spec:
+  containers:
+    - name: sai
+      image: narasimhasai95/weatherapp
+      ports:
+        - containerPort: 198
