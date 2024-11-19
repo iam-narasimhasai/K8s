@@ -1,0 +1,15 @@
+---
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: podcreation
+  labels:
+    env: prod
+spec:
+  containers:
+    - name: cont1
+      image: narasimhasai95/weatherapp
+      ports:
+        - containerPort: 80
+     
+     
