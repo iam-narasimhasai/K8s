@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: replicasetforwapp
+spec:
+  replicas: 3
+  selector:
+    matchLables:
+      app: wapp
+  template:
+    metadata: 
+      name: wapp-pod
+      labels:
+        app: wapp
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/weatherapp
+          ports:
+            - containerPort: 80
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wappService
+spec:
+  type: LoadBalancer
+  selector:
+      app: wapp
+  ports:
+    - port: 80
+      targetPort: 80
+
+  

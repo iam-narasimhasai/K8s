@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: devops-rc
+spec:
+  replicas: 3
+  template:
+    metadata:
+      lables:
+        app: wapp
+  selector:
+    matchLabels:
+      app: wapp
+    spec:
+      containers:
+        - name: cont11
+          image: narasimhasai95/weatherapp
+          ports:
+            - containerPort: 80
