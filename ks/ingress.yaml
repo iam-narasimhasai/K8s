@@ -1,0 +1,76 @@
+# # Ingress Resource
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: nginx-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   rules:
+#     - host: ingress.devopsinaction.in
+#       http:
+#         paths:
+#           - path: /ab
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: nginxservice
+#                 port:
+#                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-apps-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ingress.devopsinaction.in
+    http:
+      paths:
+      - path: /ab
+        pathType: Prefix
+        backend:
+          service:
+            name: nginxservice
+            port:
+              number: 80
+---
+# Deployment Resource
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginxdeploy
+  labels:
+    env: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wapp
+  template:
+    metadata:
+      labels:
+        app: wapp
+    spec:
+      containers:
+        - name: cont1
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+
+---
+# Service Resource
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxservice
+spec:
+  type: ClusterIP
+  selector:
+    app: wapp
+  ports:
+    - port: 80
+      targetPort: 80

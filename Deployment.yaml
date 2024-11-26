@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsnew
+  labels:
+    env: prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wapp
+  template:
+    metadata:
+      name: pod1
+      labels:
+        app: wapp
+        env: prod
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/weatherapp
+          ports:
+            - containerPort: 80
