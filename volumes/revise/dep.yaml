@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploydemo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zomato
+  template:
+    metadata:
+      labels: 
+        app: zomato
+    spec:
+
+          
