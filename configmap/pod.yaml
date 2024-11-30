@@ -20,4 +20,5 @@ spec:
             configMapKeyRef:
               name: flm
               key: db
-                    
+
+#kubectl create cm flm --from-literal=db=mysql --from-literal=port=3000
