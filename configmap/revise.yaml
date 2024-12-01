@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assests
+data:
+  dburl: "wewewewewenwewej"
+  apiurl: "apashchampakiriri"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pods2121
+spec:
+  containers:
+    - name: cont1
+      image: centos
+      ports:
+        - containerPort: 80
+      envFrom:
+        - configMapRef:
+            name: assests
+    
+    - name: cont2
+      image: ubuntu
+      ports:
+        - containerPort: 8080
+      env:
+        - name: url
+          valueFrom:
+            configMapKeyRef:
+              name: assests
+              key: dburl
+
+
+---
+#kubectl create secret generic avengers --from-literal=port=3030
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pods1
+spec:
+  containers:
+    - name: cont1
+      image: nginx
+      ports:
+        - containerPort: 80
+      env:
+        - name: db_port
+          valueFrom:
+            secretKeyRef:
+              key: port
+              name: avengers
