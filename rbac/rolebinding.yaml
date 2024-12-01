@@ -1,0 +1,14 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: stage-rolebinding
+  namespace: stage
+subjects:
+  - kind: User
+    name: sai
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: stagerole
+  apiGroup: rbac.authorization.k8s.io

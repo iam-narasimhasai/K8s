@@ -19,6 +19,7 @@ spec:
       containers:
         - name: cont1
           image: narasimhasai95/weatherapp
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
          
