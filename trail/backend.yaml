@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-task
+  template:
+    metadata:
+      labels:
+        app: backend-task
+    spec:
+      containers:
+        - name: cont2
+          image: narasimhasai95/express
+          ports:
+            - containerPort: 345
+          env:
+            - name: MONGO_URL
+              value: "mongodb+srv://sai:secret32412@cluster0.awxhn.mongodb.net/course-goals?retryWrites=true&w=majority"
+            - name: PORT
+              value: "345"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend-task
+  ports:
+    - port: 80
+      targetPort: 345
