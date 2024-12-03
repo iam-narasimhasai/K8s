@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: todoapp
 spec:
   replicas: 2
   selector:
@@ -20,7 +21,7 @@ spec:
             - containerPort: 3000
           env:
             - name: REACT_APP_API_URL
-              value: "http://a07212377ec6d4a8c9009c1021c1e0ec-726659673.us-east-1.elb.amazonaws.com/goals"
+              value: "http://backendservice:345/goals"
 ---
 apiVersion: v1
 kind: Service
