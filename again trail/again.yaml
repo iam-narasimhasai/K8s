@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backenddeploy
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/express
+          ports:
+            - containerPort: 345
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecrets
+                  key: MONGO_URL
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backendsecrets
+                  key: PORT
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 345
+      targetPort: 345
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/frontreact
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_API_URL
+              value: "http://express.devopsinaction.in/goals"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontendservice
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: express.devopsinaction.in
+      http:
+        paths:
+          - path: /goals
+            pathType: Prefix
+            backend:
+              service:
+                name: backendservice
+                port:
+                  number: 345
+    - host: todo.devopsinaction.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontendservice
+                port:
+                  number: 3000

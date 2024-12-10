@@ -1,0 +1,150 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backenddeploy
+  
+spec:
+  replicas: 2
+  selector:
+    matchLabels: 
+      app: backend
+  template:
+    metadata:
+      labels: 
+        app: backend
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/express
+          ports:
+            - containerPort: 345
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                secretKeyRef: 
+                  name: backendsecrets
+                  key: MONGO_URL 
+            - name: PORT
+              valueFrom:
+                secretKeyRef: 
+                  name: backendsecrets
+                  key: PORT
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice2
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend
+  ports:
+      port: 80
+      targetPort: 345
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backendservice
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+      port: 345
+      targetPort: 345
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels: 
+      app: backend
+  template:
+    metadata:
+      labels: 
+        app: backend
+    spec:
+      containers:
+        - name: cont1
+          image: narasimhasai95/frontreact
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_API_URL
+              value: "http://express.devopsinaction.in/goals"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontendservice2
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontendservice
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: express.devopsinaction.in
+      http:
+        paths:
+          - path: /goals
+            pathType: Prefix
+            backend:
+              service:
+                name: backendservice
+                port:
+                  number: 345
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: todo.devopsinaction.in
+      http:
+        paths:
+          - path: /app
+            pathType: Prefix
+            backend:
+              service:
+                name: frontendservice
+                port:
+                  number: 3000
